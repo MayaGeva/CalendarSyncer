@@ -1,20 +1,20 @@
-﻿using CalendarSyncer.AppointmentDetails;
+﻿using WindowsCalendar.AppointmentDetails;
 using System;
 using System.IO.Pipes;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Appointments;
 using System.Runtime.Serialization.Json;
-using CalendarSyncer.Calendar;
+using WindowsCalendar.Calendar;
 
-namespace CalendarSyncer
+namespace WindowsCalendar
 {
     internal class PipeServer
     {
-        WindowsCalendar calendar;
+        WindowsAppCalendar calendar;
         public PipeServer() 
         {
-            calendar = new WindowsCalendar();
+            calendar = new WindowsAppCalendar();
         }
 
         public async Task RunServer()

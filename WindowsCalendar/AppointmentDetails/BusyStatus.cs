@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace CalendarSyncer.AppointmentDetails
+namespace WindowsCalendar.AppointmentDetails
 {
     public enum BusyStatus
     {

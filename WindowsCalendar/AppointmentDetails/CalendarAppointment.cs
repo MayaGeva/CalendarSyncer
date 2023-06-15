@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using Windows.ApplicationModel.Appointments;
 
-namespace CalendarSyncer.AppointmentDetails
+namespace WindowsCalendar.AppointmentDetails
 {
     [DataContract]
     public class CalendarAppointment

@@ -126,7 +126,7 @@
     <Compile Include="AppointmentDetails\ReccurenceDetails.cs" />
     <Compile Include="AppointmentDetails\ReccurenceType.cs" />
     <Compile Include="PipeServer.cs" />
-    <Compile Include="WindowsCalendar.cs" />
+    <Compile Include="WindowsAppCalendar.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

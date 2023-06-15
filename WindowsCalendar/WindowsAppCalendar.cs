@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Appointments;
 
-namespace CalendarSyncer.Calendar
+namespace WindowsCalendar.Calendar
 {
-    internal class WindowsCalendar
+    internal class WindowsAppCalendar
     {
         AppointmentStore appointmentStore;
         AppointmentCalendar appCalendar;
-        public WindowsCalendar() 
+        public WindowsAppCalendar() 
         {
             InitCalendar();
         }
