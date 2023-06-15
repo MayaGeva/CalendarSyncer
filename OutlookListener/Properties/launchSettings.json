@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OutlookListener": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
