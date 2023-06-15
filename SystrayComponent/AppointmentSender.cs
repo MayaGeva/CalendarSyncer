@@ -1,11 +1,11 @@
-﻿using OutlookListener.Calendar;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using SystrayComponent.Calendar;
 using Windows.Storage;
 
-namespace OutlookListener
+namespace SystrayComponent
 {
     internal class AppointmentSender
     {

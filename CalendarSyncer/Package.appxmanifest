@@ -47,8 +47,7 @@
 			<uap:Extension Category="windows.appService">
 				<uap:AppService Name="SystrayExtensionService"/>
 			</uap:Extension>
-			<desktop:Extension Category="windows.fullTrustProcess" Executable="OutlookListener\OutlookListener.exe" />
-			<desktop:Extension Category="windows.fullTrustProcess" Executable="Win32\SystrayComponent.exe" />
+			<desktop:Extension Category="windows.fullTrustProcess" Executable="SystrayComponent\SystrayComponent.exe" />
 		</Extensions>
     </Application>
   </Applications>

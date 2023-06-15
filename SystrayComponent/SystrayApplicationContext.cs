@@ -7,7 +7,6 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
-//using System.IO.Packaging;
 
 namespace SystrayComponent
 {
@@ -15,7 +14,7 @@ namespace SystrayComponent
     {
         private AppServiceConnection connection = null;
         private NotifyIcon notifyIcon = null;
-        private Form1 configWindow = new Form1();
+        Calendar.Calendar calendar;
 
         public SystrayApplicationContext()
         {
@@ -29,6 +28,7 @@ namespace SystrayComponent
             menuStrip.Items.Add(exitMenuItem);
             notifyIcon.ContextMenuStrip = menuStrip;
             notifyIcon.Visible = true;
+            calendar = new Calendar.Calendar();
         }
 
         private async void OpenApp(object sender, EventArgs e)
