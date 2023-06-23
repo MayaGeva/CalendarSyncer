@@ -11,14 +11,12 @@ namespace SystrayComponent.Calendar
         MAPIFolder calendarFolder;
         Items calendarItems;
         List<AppointmentItem> calendarItemsList;
-        AppointmentSender appointmentSender;
         ItemsEvents_ItemAddEventHandler addEvent;
         ItemsEvents_ItemChangeEventHandler changeEvent;
         ItemEvents_10_BeforeDeleteEventHandler beforeDeleteEvent;
 
         public Calendar(ItemsEvents_ItemAddEventHandler addEvent, ItemsEvents_ItemChangeEventHandler changeEvent, ItemEvents_10_BeforeDeleteEventHandler beforeDeleteEvent)
         {
-            appointmentSender = new AppointmentSender();
             outlookApp = new Microsoft.Office.Interop.Outlook.Application();
             mapiNamespace = outlookApp.GetNamespace(OUTLOOK_NAMESPACE);
             calendarFolder = mapiNamespace.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);

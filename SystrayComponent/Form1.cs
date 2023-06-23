@@ -1,7 +1,3 @@
-using Microsoft.Office.Interop.Outlook;
-using System.Windows.Forms;
-using SystrayComponent.AppointmentDetails;
-using SystrayComponent.Calendar;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Core;
@@ -13,8 +9,6 @@ namespace SystrayComponent
     {
         private AppServiceConnection? connection = null;
         private NotifyIcon notifyIcon;
-        Calendar.Calendar calendar;
-        AppointmentSender appointmentSender;
         public Form1()
         {
             InitializeComponent();
@@ -29,59 +23,22 @@ namespace SystrayComponent
             menuStrip.Items.Add(exitMenuItem);
             notifyIcon.ContextMenuStrip = menuStrip;
             notifyIcon.Visible = true;
-
-            appointmentSender = new AppointmentSender();
-            calendar = new Calendar.Calendar(OutlookItemAdd, OutlookItemChange, ItemBeforeDelete);
         }
-
-        private void ItemBeforeDelete(object Item, ref bool Cancel)
-        {
-            Console.WriteLine("An Item is being deleted!");
-            if (!Cancel && Item is AppointmentItem item)
-            {
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.RemoveItem);
-                this.appointmentSender.SendAppointment(appointment);
-                calendar.RemoveItem(item);
-            }
-        }
-
-        private void OutlookItemChange(object Item)
-        {
-            Console.WriteLine("An Item has changed!");
-            if (Item is AppointmentItem item)
-            {
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.ChangeItem);
-                this.appointmentSender.SendAppointment(appointment);
-            }
-        }
-
-        private void OutlookItemAdd(object Item)
-        {
-            Console.WriteLine("An Item has been added!");
-
-            if (Item is AppointmentItem item)
-            {
-                // get appointment xml
-                item.BeforeDelete += ItemBeforeDelete;
-                calendar.AddItem(item);
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.AddItem);
-                this.appointmentSender.SendAppointment(appointment);
-            }
-        }
-
-
+        
         private async void OpenApp(object? sender, EventArgs e)
         {
             IEnumerable<AppListEntry> appListEntries = await Package.Current.GetAppListEntriesAsync();
             await appListEntries.First().LaunchAsync();
         }
 
-        private async void Exit(object sender, EventArgs e)
+        private async void Exit(object? sender, EventArgs e)
         {
-            ValueSet message = new ValueSet();
-            message.Add("exit", "");
+            ValueSet message = new ValueSet
+            {
+                { "exit", "" }
+            };
             await SendToUWP(message);
-            System.Windows.Forms.Application.Exit();
+            Application.Exit();
         }
 
         private async Task SendToUWP(ValueSet message)

@@ -1,40 +1,38 @@
 ﻿using WindowsCalendar.AppointmentDetails;
-using System;
 using System.IO.Pipes;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Appointments;
 using System.Runtime.Serialization.Json;
-using WindowsCalendar.Calendar;
+using System.Collections.Concurrent;
 
 namespace WindowsCalendar
 {
     internal class PipeServer
     {
-        WindowsAppCalendar calendar;
-        public PipeServer() 
+        BlockingCollection<CalendarAppointment> appointments;
+        public PipeServer(BlockingCollection<CalendarAppointment> calendarAppointments) 
         {
-            calendar = new WindowsAppCalendar();
+            appointments = calendarAppointments;
         }
 
         public async Task RunServer()
         {
             while (true)
             {
-                NamedPipeServerStream pipeServer = new NamedPipeServerStream(@"LOCAL\calendar-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+                NamedPipeServerStream pipeServer = new NamedPipeServerStream(@"LOCAL\calendar-pipe", PipeDirection.InOut, 10, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
                 pipeServer.WaitForConnection();
                 StreamReader reader = new StreamReader(pipeServer);
                 string jsonAppointment = reader.ReadToEnd();
-                CalendarAppointment calendarAppointment = GetCalendarAppointmentFromJson(jsonAppointment);
+                CalendarAppointment calendarAppointment = await GetCalendarAppointmentFromJson(jsonAppointment);
                 if (calendarAppointment != null)
                 {
-                    await HandleAppointment(calendarAppointment);
+                    appointments.Add(calendarAppointment);
                 }
                 pipeServer.Disconnect();
             }
         }
 
-        CalendarAppointment GetCalendarAppointmentFromJson(string appointmentJson)
+        async Task<CalendarAppointment> GetCalendarAppointmentFromJson(string appointmentJson)
         {
             CalendarAppointment calendarAppointment;
             using (Stream stream = new MemoryStream())
@@ -46,25 +44,6 @@ namespace WindowsCalendar
                 calendarAppointment = (CalendarAppointment)deserializer.ReadObject(stream);
             }
             return calendarAppointment;
-        }
-
-        async Task HandleAppointment(CalendarAppointment calendarAppointment)
-        {
-            Appointment appointment = calendarAppointment.ToAppointment();
-            switch (calendarAppointment.Action)
-            {
-                case AppointmentAction.AddItem:
-                    await calendar.AddAppointment(appointment);
-                    break;
-                case AppointmentAction.RemoveItem:
-                    await calendar.RemoveAppointment(appointment);
-                    break;
-                case AppointmentAction.ChangeItem:
-                    await calendar.ModifyAppointment(appointment);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
         }
     }
 }
