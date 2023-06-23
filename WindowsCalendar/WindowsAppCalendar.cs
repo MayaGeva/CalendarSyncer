@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Appointments;
+using Windows.Media.Playback;
 
 namespace WindowsCalendar.Calendar
 {
@@ -9,6 +10,7 @@ namespace WindowsCalendar.Calendar
     {
         AppointmentStore appointmentStore;
         AppointmentCalendar appCalendar;
+        const string OUTLOOK_CALENDAR = "OutlookCalendar";
         public WindowsAppCalendar() 
         {
             InitCalendar();
@@ -16,7 +18,7 @@ namespace WindowsCalendar.Calendar
         async void InitCalendar()
         {
             this.appointmentStore = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AllCalendarsReadWrite);
-            this.appCalendar = await appointmentStore.CreateAppointmentCalendarAsync("OutlookCalendar");
+            this.appCalendar = await appointmentStore.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
         }
         public async Task AddAppointment(Appointment appointment)
         {
@@ -34,7 +36,7 @@ namespace WindowsCalendar.Calendar
         public async Task<List<Appointment>> GetEventsOnDate(DateTime date)
         {
             this.appointmentStore = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AllCalendarsReadWrite);
-            this.appCalendar = await appointmentStore.CreateAppointmentCalendarAsync("OutlookListener");
+            this.appCalendar = await appointmentStore.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
             IReadOnlyList<Appointment> appointments = await appointmentStore.FindAppointmentsAsync(new DateTimeOffset(date.Date), TimeSpan.FromHours(24));
             return new List<Appointment>(appointments);
         }

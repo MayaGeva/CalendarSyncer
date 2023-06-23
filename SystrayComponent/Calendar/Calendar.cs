@@ -10,65 +10,51 @@ namespace SystrayComponent.Calendar
         NameSpace mapiNamespace;
         MAPIFolder calendarFolder;
         Items calendarItems;
+        List<AppointmentItem> calendarItemsList;
         AppointmentSender appointmentSender;
+        ItemsEvents_ItemAddEventHandler addEvent;
+        ItemsEvents_ItemChangeEventHandler changeEvent;
+        ItemEvents_10_BeforeDeleteEventHandler beforeDeleteEvent;
 
-        public Calendar()
+        public Calendar(ItemsEvents_ItemAddEventHandler addEvent, ItemsEvents_ItemChangeEventHandler changeEvent, ItemEvents_10_BeforeDeleteEventHandler beforeDeleteEvent)
         {
             appointmentSender = new AppointmentSender();
             outlookApp = new Microsoft.Office.Interop.Outlook.Application();
             mapiNamespace = outlookApp.GetNamespace(OUTLOOK_NAMESPACE);
             calendarFolder = mapiNamespace.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
+
             calendarItems = calendarFolder.Items;
             calendarItems.IncludeRecurrences = true;
+
+            this.addEvent = addEvent;
+            this.changeEvent = changeEvent;
+            this.beforeDeleteEvent = beforeDeleteEvent;
+            calendarItemsList = new List<AppointmentItem>();
             SetupEventHandlers();
         }
         void SetupEventHandlers()
         {
-            calendarItems.ItemAdd += OutlookListenerItems_ItemAdd;
-            calendarItems.ItemChange += OutlookListenerItems_ItemChange;
+            calendarItems.ItemAdd += this.addEvent;
+            calendarItems.ItemChange += this.changeEvent;
 
             foreach (AppointmentItem item in calendarItems)
             {
-                item.BeforeDelete += CalendarItem_BeforeDelete;
+                item.BeforeDelete += this.beforeDeleteEvent;
+                calendarItemsList.Add(item);
             }
         }
 
-        private void CalendarItem_BeforeDelete(object Item, ref bool Cancel)
+        public void AddItem(AppointmentItem appointmentItem)
         {
-            Console.WriteLine("An Item is being deleted!");
-            if (!Cancel && Item is AppointmentItem item)
-            {
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.RemoveItem);
-                this.appointmentSender.SendAppointment(appointment);
-                item.BeforeDelete -= CalendarItem_BeforeDelete;
-
-            }
+            appointmentItem.BeforeDelete += beforeDeleteEvent;
+            calendarItemsList.Add(appointmentItem);
         }
 
-        private void OutlookListenerItems_ItemChange(object Item)
+        public void RemoveItem(AppointmentItem appointmentItem)
         {
-            Console.WriteLine("An Item has changed!");
-            if (Item is AppointmentItem item)
-            {
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.ChangeItem);
-                this.appointmentSender.SendAppointment(appointment);
-            }
+            appointmentItem.BeforeDelete -= beforeDeleteEvent;
+            calendarItemsList.Remove(appointmentItem);
         }
-
-        private void OutlookListenerItems_ItemAdd(object Item)
-        {
-            Console.WriteLine("An Item has been added!");
-
-            if (Item is AppointmentItem item)
-            {
-                // get appointment xml
-                item.BeforeDelete += CalendarItem_BeforeDelete;
-                calendarItems.Add(item);
-                CalendarAppointment appointment = new CalendarAppointment(item, AppointmentAction.AddItem);
-                this.appointmentSender.SendAppointment(appointment);
-            }
-        }
-
 
         /// <summary>
         /// Get all appointments with a certain filter

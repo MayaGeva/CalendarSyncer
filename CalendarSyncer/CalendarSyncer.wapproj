@@ -77,7 +77,6 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OutlookListener\OutlookListener.csproj" />
     <ProjectReference Include="..\SystrayComponent\SystrayComponent.csproj" />
     <ProjectReference Include="..\WindowsCalendar\WindowsCalendar.csproj" />
   </ItemGroup>

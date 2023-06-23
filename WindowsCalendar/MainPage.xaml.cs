@@ -47,10 +47,7 @@ namespace CalendarSyncer
         async void StartServer()
         {
             ApplicationData.Current.LocalSettings.Values["PackageSid"] = WebAuthenticationBroker.GetCurrentApplicationCallbackUri().Host.ToUpper();
-            if (ApiInformation.IsApiContractPresent("Windows.ApplicationModel.FullTrustAppContract", 1, 0))
-            {
-                await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
-            }
+            await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             await pipeServer.RunServer();
         }
     }
