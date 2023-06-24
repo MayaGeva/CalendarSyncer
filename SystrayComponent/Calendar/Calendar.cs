@@ -1,4 +1,6 @@
 ﻿using Microsoft.Office.Interop.Outlook;
+using System.Globalization;
+using System.Security.Policy;
 using SystrayComponent.AppointmentDetails;
 
 namespace SystrayComponent.Calendar
@@ -52,6 +54,24 @@ namespace SystrayComponent.Calendar
         {
             appointmentItem.BeforeDelete -= beforeDeleteEvent;
             calendarItemsList.Remove(appointmentItem);
+        }
+
+        public List<CalendarAppointment> GetAllAppointments()
+        {
+            List<CalendarAppointment> appointments = new List<CalendarAppointment>();
+            Items outlookCalendarItems = calendarFolder.Items;
+            foreach (AppointmentItem item in outlookCalendarItems)
+            {
+                appointments.Add(new CalendarAppointment(item));
+            }
+            return appointments;
+        }
+
+        public List<CalendarAppointment> GetCalendarAppointmentsModifiedAfter(DateTime time)
+        {
+            string timeFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            string sfilter = string.Format("[ModifiedTime]>={0}", time.ToString(timeFormat));
+            return GetAppointmentsFiltered(sfilter);
         }
 
         /// <summary>

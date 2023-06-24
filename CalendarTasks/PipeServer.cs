@@ -1,13 +1,12 @@
-﻿using WindowsCalendar.AppointmentDetails;
-using System.IO.Pipes;
+﻿using System.IO.Pipes;
 using System.IO;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Json;
 using System.Collections.Concurrent;
 using Windows.ApplicationModel.Background;
-using System.Threading;
+using CalendarTasks.AppointmentDetails;
 
-namespace WindowsCalendar
+namespace CalendarTasks
 {
     internal class PipeServer
     {
@@ -26,20 +25,7 @@ namespace WindowsCalendar
                 StreamReader reader = new StreamReader(pipeServer);
                 string jsonAppointment = reader.ReadToEnd();
                 CalendarAppointment calendarAppointment = await GetCalendarAppointmentFromJson(jsonAppointment);
-                if (calendarAppointment != null)
-                {
-                    Mutex mutex = new Mutex(true, "AppointmentsQueue", out bool createdNew);
-                    if (createdNew)
-                    {
-                        appointments.Add(calendarAppointment);
-                    }
-                    else
-                    {
-                        mutex.WaitOne();
-                        appointments.Add(calendarAppointment);
-                    }
-                    mutex.ReleaseMutex();
-                }
+                appointments.Add(calendarAppointment);
                 pipeServer.Disconnect();
             }
         }

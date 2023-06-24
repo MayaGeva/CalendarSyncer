@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.AppService;
@@ -6,6 +9,9 @@ using Windows.ApplicationModel.Background;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using WindowsCalendar;
+using WindowsCalendar.AppointmentDetails;
+using WindowsCalendar.Calendar;
 
 namespace CalendarSyncer
 {
@@ -17,6 +23,8 @@ namespace CalendarSyncer
         public static BackgroundTaskDeferral AppServiceDeferral = null;
         public static AppServiceConnection Connection = null;
         public static bool IsForeground = false;
+        const string CALENDAR_SYNC_TASK = "CalendarSyncTask";
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -29,6 +37,33 @@ namespace CalendarSyncer
             this.EnteredBackground += App_EnteredBackground;
             Windows.UI.ViewManagement.ApplicationView.PreferredLaunchViewSize = new Windows.Foundation.Size(1000, 500);
             Windows.UI.ViewManagement.ApplicationView.PreferredLaunchWindowingMode = Windows.UI.ViewManagement.ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            BlockingCollection<CalendarAppointment> calendarAppointments = new BlockingCollection<CalendarAppointment>();
+            Task pipeServer = Task.Run(() => new PipeServer(calendarAppointments).Run());
+            Task appointmentHandler = Task.Run(() => new WindowsAppCalendar(calendarAppointments).HandleAppointments());
+        }
+
+        private void RegisterBackground(string taskName)
+        {
+            var taskRegistered = false;
+
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            var requestTask = BackgroundExecutionManager.RequestAccessAsync();
+
+            if (!taskRegistered)
+            {
+                var builder = new BackgroundTaskBuilder();
+                builder.Name = taskName;
+                builder.TaskEntryPoint = string.Format("CalendarTasks.{0}", taskName);
+                builder.SetTrigger(new TimeTrigger(15, false));
+                builder.Register();
+            }
         }
 
         private void App_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
@@ -122,7 +157,7 @@ namespace CalendarSyncer
         }
 
         /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
+        /// Invoked when application execution is being suspended. Application state is saved
         /// without knowing whether the application will be terminated or resumed with the contents
         /// of memory still intact.
         /// </summary>

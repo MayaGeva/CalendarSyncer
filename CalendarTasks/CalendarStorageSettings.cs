@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace CalendarPoc
+namespace CalendarTasks
 {
     internal class CalendarStorageSettings
     {
@@ -35,20 +35,6 @@ namespace CalendarPoc
             }
         }
 
-        public bool RoamingIdExists(string roamingId)
-        {
-            using (SqliteConnection db = new SqliteConnection($"Filename={appointments_path}"))
-            {
-                db.Open();
-                string tableCommand = string.Format("SELECT * FROM {0} WHERE {1} = '{2}'", CALENDAR_APPOINTMENTS_TABLE, APPOINTMENT_ROAMING_ID, roamingId);
-
-                SqliteCommand selectCommand = new SqliteCommand(tableCommand, db);
-                SqliteDataReader query = selectCommand.ExecuteReader();
-
-                return query.HasRows;
-            }
-        }
-
         public void AddLocalIdMapping(string roamingId, string localId)
         {
             using (SqliteConnection db = new SqliteConnection($"Filename={appointments_path}"))
@@ -73,6 +59,7 @@ namespace CalendarPoc
 
                 return query.GetString(0);
             }
+
         }
 
         public void RemoveLocalIdMapping(string roamingId)
@@ -81,18 +68,6 @@ namespace CalendarPoc
             {
                 db.Open();
                 string removeCommand = string.Format("DELETE FROM {0} WHERE {1} = '{2}'", CALENDAR_APPOINTMENTS_TABLE, APPOINTMENT_ROAMING_ID, roamingId);
-
-                SqliteCommand createTable = new SqliteCommand(removeCommand, db);
-
-                createTable.ExecuteReader();
-            }
-        }
-        public void RemoveLocalIdMapping(string localId, string roamingId)
-        {
-            using (SqliteConnection db = new SqliteConnection($"Filename={appointments_path}"))
-            {
-                db.Open();
-                string removeCommand = string.Format("DELETE FROM {0} WHERE {1} = '{2}'", CALENDAR_APPOINTMENTS_TABLE, APPOINTMENT_LOCAL_ID, localId);
 
                 SqliteCommand createTable = new SqliteCommand(removeCommand, db);
 

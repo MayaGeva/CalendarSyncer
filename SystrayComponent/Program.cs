@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using SystrayComponent.Calendar;
+using Windows.Storage;
 
 namespace SystrayComponent
 {
@@ -32,5 +33,6 @@ namespace SystrayComponent
                 mutex.Close();
             }
         }
+        
     }
 }

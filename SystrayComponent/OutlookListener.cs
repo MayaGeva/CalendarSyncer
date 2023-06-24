@@ -1,12 +1,8 @@
 ﻿using Microsoft.Office.Interop.Outlook;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SystrayComponent.AppointmentDetails;
 using SystrayComponent.Calendar;
+using Windows.Storage;
 
 namespace SystrayComponent
 {
@@ -18,6 +14,29 @@ namespace SystrayComponent
         {
             this.calendar = new Calendar.Calendar(OutlookItemAdd, OutlookItemChange, ItemBeforeDelete);
             this.calendarAppointments = calendarAppointments;
+        }
+
+        void FirstTimeRun(BlockingCollection<CalendarAppointment> appointmentQueue)
+        {
+            bool firstTime = ApplicationData.Current.LocalSettings.Values.ContainsKey("lastSyncTime");
+            if (firstTime)
+            {
+                List<CalendarAppointment> appointments = calendar.GetAllAppointments();
+                foreach (CalendarAppointment appointment in appointments)
+                {
+                    appointmentQueue.Add(appointment);
+                }
+                ApplicationData.Current.LocalSettings.Values["lastSyncTime"] = DateTime.Now.ToString();
+            }
+            else
+            {
+                DateTime lastUpdate = DateTime.Parse((string)ApplicationData.Current.LocalSettings.Values["lastSyncTime"]);
+                List<CalendarAppointment> appointments = calendar.GetCalendarAppointmentsModifiedAfter(lastUpdate);
+                foreach (CalendarAppointment appointment in appointments)
+                {
+                    appointmentQueue.Add(appointment);
+                }
+            }
         }
 
         private void ItemBeforeDelete(object Item, ref bool Cancel)

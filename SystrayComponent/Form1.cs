@@ -1,7 +1,9 @@
+using System.Windows.Forms;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 
 namespace SystrayComponent
 {
@@ -23,6 +25,8 @@ namespace SystrayComponent
             menuStrip.Items.Add(exitMenuItem);
             notifyIcon.ContextMenuStrip = menuStrip;
             notifyIcon.Visible = true;
+            this.ShowInTaskbar = false;
+            Hide();
         }
         
         private async void OpenApp(object? sender, EventArgs e)

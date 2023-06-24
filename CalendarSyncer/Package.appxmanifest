@@ -56,5 +56,6 @@
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
     <uap:Capability Name="appointments"/>
+	<rescap:Capability Name="extendedBackgroundTaskTime"/>
   </Capabilities>
 </Package>

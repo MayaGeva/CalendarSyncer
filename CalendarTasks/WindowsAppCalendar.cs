@@ -1,14 +1,12 @@
-﻿using CalendarPoc;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Appointments;
 using Windows.Storage;
-using WindowsCalendar.AppointmentDetails;
+using CalendarTasks.AppointmentDetails;
 
-namespace WindowsCalendar.Calendar
+namespace CalendarTasks
 {
     internal class WindowsAppCalendar
     {
@@ -45,18 +43,7 @@ namespace WindowsCalendar.Calendar
         {
             while (true)
             {
-                CalendarAppointment calendarAppointment;
-                Mutex mutex = new Mutex(true, "AppointmentsQueue", out bool createdNew);
-                if (createdNew)
-                {
-                    calendarAppointment = appointmentCollection.Take();
-                }
-                else
-                {
-                    mutex.WaitOne();
-                    calendarAppointment = appointmentCollection.Take();
-                }
-                mutex.ReleaseMutex();
+                CalendarAppointment calendarAppointment = appointmentCollection.Take();
                 Appointment appointment = calendarAppointment.ToAppointment();
                 switch (calendarAppointment.Action)
                 {
@@ -83,11 +70,8 @@ namespace WindowsCalendar.Calendar
 
         public async Task AddAppointment(Appointment appointment)
         {
-            if (!calendarStorageSettings.RoamingIdExists(appointment.RoamingId))
-            {
-                await appCalendar.SaveAppointmentAsync(appointment);
-                calendarStorageSettings.AddLocalIdMapping(appointment.RoamingId, appointment.LocalId);
-            }
+            await appCalendar.SaveAppointmentAsync(appointment);
+            calendarStorageSettings.AddLocalIdMapping(appointment.RoamingId, appointment.LocalId);
         }
 
         public async Task RemoveAppointment(Appointment appointment) 
@@ -101,7 +85,6 @@ namespace WindowsCalendar.Calendar
             string localId = calendarStorageSettings.GetLocalIdFromRoamingId(appointment.RoamingId);
             await appCalendar.DeleteAppointmentAsync(localId);
             await appCalendar.SaveAppointmentAsync(appointment);
-            calendarStorageSettings.RemoveLocalIdMapping(localId, appointment.RoamingId);
             calendarStorageSettings.AddLocalIdMapping(appointment.RoamingId, appointment.LocalId);
         }
 

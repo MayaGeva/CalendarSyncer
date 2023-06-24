@@ -46,11 +46,28 @@ namespace WindowsCalendar.AppointmentDetails
                 Organizer = new AppointmentOrganizer() { DisplayName = this.Organizer },
                 RoamingId = this.AppointmentId
             };
-            if (this.IsRecurring )
+            if (this.IsRecurring)
             {
                 appointment.Recurrence = this.ReccurenceDetails.ToAppointmentRecurrence();
             }
             return appointment;
         }
+
+        public CalendarAppointment(Appointment appointment)
+        {
+            this.Title = appointment.Subject;
+            this.Description = appointment.Details;
+            this.Location = appointment.Location;
+            this.BusyStatus = (BusyStatus)appointment.BusyStatus;
+            this.AllDayEvent = appointment.AllDay;
+            this.Start = appointment.StartTime.DateTime;
+            this.Duration = appointment.Duration;
+            this.Organizer = appointment.Organizer.DisplayName;
+            this.AppointmentId = appointment.RoamingId;
+        }
+        /*public bool Compare(Appointment other)
+        {
+
+        }*/
     }
 }
