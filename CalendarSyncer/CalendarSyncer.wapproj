@@ -50,13 +50,13 @@
   </PropertyGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
   <PropertyGroup>
-    <ProjectGuid>609943c1-0218-459a-9837-1fbe32d462f5</ProjectGuid>
+    <ProjectGuid>343b38d2-f12a-4d64-9e7a-a09a20deba8f</ProjectGuid>
     <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
-    <EntryPointProjectUniqueName>..\WindowsCalendar\WindowsCalendar.csproj</EntryPointProjectUniqueName>
+    <EntryPointProjectUniqueName>..\SyncerApp\SyncerApp.csproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -77,7 +77,6 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SystrayComponent\SystrayComponent.csproj" />
-    <ProjectReference Include="..\WindowsCalendar\WindowsCalendar.csproj" />
+    <ProjectReference Include="..\SyncerApp\SyncerApp.csproj" />
   </ItemGroup>
 </Project>

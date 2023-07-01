@@ -4,11 +4,10 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="42bae379-a477-4228-9d05-3707ea7cf47a"
+    Name="92d78663-39df-4f00-aa79-096ad97334ae"
     Publisher="CN=Maya"
     Version="1.0.0.0" />
 
@@ -40,15 +39,6 @@
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
-		<Extensions>
-			<uap:Extension Category="windows.appService">
-				<uap:AppService Name="CommunicationService" />
-			</uap:Extension>
-			<uap:Extension Category="windows.appService">
-				<uap:AppService Name="SystrayExtensionService"/>
-			</uap:Extension>
-			<desktop:Extension Category="windows.fullTrustProcess" Executable="SystrayComponent\SystrayComponent.exe" />
-		</Extensions>
     </Application>
   </Applications>
 
@@ -56,6 +46,5 @@
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
     <uap:Capability Name="appointments"/>
-	<rescap:Capability Name="extendedBackgroundTaskTime"/>
   </Capabilities>
 </Package>
