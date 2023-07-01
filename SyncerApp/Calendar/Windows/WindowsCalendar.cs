@@ -1,5 +1,6 @@
 ﻿using SyncerApp.Calendar;
 using System.Collections.Concurrent;
+using System.Reflection;
 using Windows.ApplicationModel.Appointments;
 using Windows.Storage;
 
@@ -59,10 +60,12 @@ namespace SyncerApp.Calendar.Windows
         public async Task ModifyAppointment(Appointment appointment)
         {
             string localId = calendarStorageSettings.GetLocalIdFromRoamingId(appointment.RoamingId);
-            await appCalendar.DeleteAppointmentAsync(localId);
-            await appCalendar.SaveAppointmentAsync(appointment);
-            calendarStorageSettings.RemoveLocalIdMapping(localId, appointment.RoamingId);
-            calendarStorageSettings.AddLocalIdMapping(appointment.RoamingId, appointment.LocalId);
+            Appointment original = await appointmentStore.GetAppointmentAsync(localId);
+            foreach (PropertyInfo property in typeof(Appointment).GetProperties().Where(p => p.CanWrite))
+            {
+                property.SetValue(original, property.GetValue(appointment, null), null);
+            }
+            await appCalendar.SaveAppointmentAsync(original);
         }
 
         public async Task<List<Appointment>> GetEventsOnDate(DateTime date)
