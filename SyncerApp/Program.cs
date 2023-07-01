@@ -2,7 +2,6 @@ using SyncerApp.Calendar;
 using SyncerApp.Calendar.Outlook;
 using SyncerApp.Calendar.Windows;
 using System.Collections.Concurrent;
-using System.Diagnostics.Metrics;
 
 namespace SyncerApp
 {

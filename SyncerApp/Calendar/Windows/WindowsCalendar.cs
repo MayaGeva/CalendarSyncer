@@ -1,6 +1,4 @@
-﻿using SyncerApp.Calendar;
-using System.Collections.Concurrent;
-using System.Reflection;
+﻿using System.Reflection;
 using Windows.ApplicationModel.Appointments;
 using Windows.Storage;
 
