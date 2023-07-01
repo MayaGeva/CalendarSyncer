@@ -2,6 +2,7 @@ using SyncerApp.Calendar;
 using SyncerApp.Calendar.Outlook;
 using SyncerApp.Calendar.Windows;
 using System.Collections.Concurrent;
+using System.Diagnostics.Metrics;
 
 namespace SyncerApp
 {
@@ -24,8 +25,11 @@ namespace SyncerApp
             CalendarStorageSettings storageSettings = new();
             WindowsCalendar windowsCalendar = new(storageSettings);
             WindowsCalendarSyncer windowsCalendarSyncer = new(calendarAppointments, appointmentConverter, windowsCalendar);
-            Task handleAppointments = Task.Run(() => windowsCalendarSyncer.HandleAppointments());
 
+            CancellationTokenSource cancellationToken = new CancellationTokenSource();
+            Task handleAppointments = Task.Run(() => windowsCalendarSyncer.HandleAppointments(cancellationToken.Token));
+            Application.ApplicationExit += (s, e) => cancellationToken.Cancel();
+            
             Application.Run(new SystrayComponent());
         }
     }

@@ -20,22 +20,17 @@ namespace SyncerApp.Calendar.Windows
             this.windowsCalendar = windowsCalendar;
         }
 
-        public async Task HandleAppointments()
+        public async Task HandleAppointments(CancellationToken token)
         {
-            while (true)
+            bool keep_running = true;
+            while (keep_running)
             {
-                CalendarAppointment calendarAppointment;
-                Mutex mutex = new(true, "AppointmentsQueue", out bool createdNew);
-                if (createdNew)
+                if (token.IsCancellationRequested)
                 {
-                    calendarAppointment = appointmentCollection.Take();
+                    keep_running = false;
                 }
-                else
-                {
-                    mutex.WaitOne();
-                    calendarAppointment = appointmentCollection.Take();
-                }
-                mutex.ReleaseMutex();
+                CalendarAppointment calendarAppointment = await GetAppointment();
+                
                 Appointment appointment = appointmentConverter.ToAppointment(calendarAppointment.Appointment);
                 switch (calendarAppointment.Action)
                 {
@@ -52,6 +47,22 @@ namespace SyncerApp.Calendar.Windows
                         break;
                 }
             }
+        }
+        async Task<CalendarAppointment> GetAppointment()
+        {
+            CalendarAppointment calendarAppointment;
+            Mutex mutex = new(true, "AppointmentsQueue", out bool createdNew);
+            if (createdNew)
+            {
+                calendarAppointment = appointmentCollection.Take();
+            }
+            else
+            {
+                mutex.WaitOne();
+                calendarAppointment = appointmentCollection.Take();
+            }
+            mutex.ReleaseMutex();
+            return calendarAppointment;
         }
     }
 }
