@@ -21,7 +21,7 @@ namespace SyncerApp
             
             AddToStartUp();
 
-            BlockingCollection<CalendarAppointment> calendarAppointments = new BlockingCollection<CalendarAppointment>();
+            BlockingCollection<CalendarAppointment> calendarAppointments = new();
             OutlookListener outlookListener = new(calendarAppointments);
             outlookListener.FirstTimeRun();
             
