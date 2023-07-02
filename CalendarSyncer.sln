@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "CalendarSyncer", "CalendarSyncer\CalendarSyncer.wapproj", "{343B38D2-F12A-4D64-9E7A-A09A20DEBA8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncerApp", "SyncerApp\SyncerApp.csproj", "{058F8D4D-984C-4D71-B1BE-2B145BA91C10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncerApp", "SyncerApp\SyncerApp.csproj", "{058F8D4D-984C-4D71-B1BE-2B145BA91C10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using SyncerApp.Calendar;
 using SyncerApp.Calendar.Outlook;
 using SyncerApp.Calendar.Windows;
@@ -7,6 +8,7 @@ namespace SyncerApp
 {
     internal static class Program
     {
+        const string START_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -16,6 +18,9 @@ namespace SyncerApp
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            
+            AddToStartUp();
+
             BlockingCollection<CalendarAppointment> calendarAppointments = new BlockingCollection<CalendarAppointment>();
             OutlookListener outlookListener = new(calendarAppointments);
             outlookListener.FirstTimeRun();
@@ -25,11 +30,16 @@ namespace SyncerApp
             WindowsCalendar windowsCalendar = new(storageSettings);
             WindowsCalendarSyncer windowsCalendarSyncer = new(calendarAppointments, appointmentConverter, windowsCalendar);
 
-            CancellationTokenSource cancellationToken = new CancellationTokenSource();
+            CancellationTokenSource cancellationToken = new();
             Task handleAppointments = Task.Run(() => windowsCalendarSyncer.HandleAppointments(cancellationToken.Token));
             Application.ApplicationExit += (s, e) => cancellationToken.Cancel();
             
-            Application.Run(new SystrayComponent());
+            Application.Run(new SystrayIcon());
+        }
+        static void AddToStartUp()
+        {
+            RegistryKey? startup = Registry.CurrentUser.OpenSubKey(START_KEY, true);
+            startup?.SetValue("CalendarSyncer", Application.ExecutablePath);
         }
     }
 }

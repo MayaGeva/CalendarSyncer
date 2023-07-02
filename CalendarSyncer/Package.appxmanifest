@@ -8,12 +8,12 @@
 
   <Identity
     Name="92d78663-39df-4f00-aa79-096ad97334ae"
-    Publisher="CN=Maya"
-    Version="1.0.0.0" />
+    Publisher="CN=MayaGeva"
+    Version="1.0.7.0" />
 
   <Properties>
     <DisplayName>CalendarSyncer</DisplayName>
-    <PublisherDisplayName>Maya</PublisherDisplayName>
+    <PublisherDisplayName>MayaGeva</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -44,7 +44,7 @@
 
   <Capabilities>
     <Capability Name="internetClient" />
-    <rescap:Capability Name="runFullTrust" />
+	<rescap:Capability Name="runFullTrust" />
     <uap:Capability Name="appointments"/>
   </Capabilities>
 </Package>
