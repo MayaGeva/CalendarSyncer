@@ -18,16 +18,16 @@ namespace SyncerApp
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            
-            AddToStartUp();
+
+            //AddToStartUp();
+
+            WindowsCalendar windowsCalendar = new();
 
             BlockingCollection<CalendarAppointment> calendarAppointments = new();
             OutlookListener outlookListener = new(calendarAppointments);
             outlookListener.FirstTimeRun();
             
             AppointmentConverter appointmentConverter = new(outlookListener.Calendar.CurrentUser);
-            CalendarStorageSettings storageSettings = new();
-            WindowsCalendar windowsCalendar = new(storageSettings);
             WindowsCalendarSyncer windowsCalendarSyncer = new(calendarAppointments, appointmentConverter, windowsCalendar);
 
             CancellationTokenSource cancellationToken = new();

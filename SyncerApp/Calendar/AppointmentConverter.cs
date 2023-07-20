@@ -24,7 +24,8 @@ namespace SyncerApp.Calendar
                 BusyStatus = BusyStatusConverter.ConvertBusyStatus(appointmentItem.BusyStatus),
                 Location = appointmentItem.Location,
                 UserResponse = ResponseStatusConverter.ConvertResponseStatus(appointmentItem.ResponseStatus),
-                RoamingId = appointmentItem.GlobalAppointmentID
+                RoamingId = appointmentItem.GlobalAppointmentID,
+                Reminder = TimeSpan.FromMinutes(appointmentItem.ReminderMinutesBeforeStart)
             };
             if (appointmentItem.IsRecurring)
             {

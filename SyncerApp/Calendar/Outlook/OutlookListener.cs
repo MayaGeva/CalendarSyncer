@@ -60,6 +60,13 @@ namespace SyncerApp.Calendar.Outlook
                 CalendarAppointment appointment = new(AppointmentAction.RemoveItem, item);
                 AddAppointmentToQueue(appointment);
             }
+            else if (!Cancel && Item is MeetingItem meeting)
+            {
+                var appointment = meeting.GetAssociatedAppointment(true);
+                Calendar.AddItem(appointment);
+                CalendarAppointment calAppointment = new(AppointmentAction.ChangeItem, appointment);
+                AddAppointmentToQueue(calAppointment);
+            }
         }
 
         private void OutlookItemChange(object Item)
@@ -69,6 +76,13 @@ namespace SyncerApp.Calendar.Outlook
             {
                 CalendarAppointment appointment = new(AppointmentAction.ChangeItem, item);
                 AddAppointmentToQueue(appointment);
+            }
+            else if (Item is MeetingItem meeting)
+            {
+                var appointment = meeting.GetAssociatedAppointment(true);
+                Calendar.AddItem(appointment);
+                CalendarAppointment calAppointment = new(AppointmentAction.ChangeItem, appointment);
+                AddAppointmentToQueue(calAppointment);
             }
         }
 
@@ -81,6 +95,13 @@ namespace SyncerApp.Calendar.Outlook
                 Calendar.AddItem(item);
                 CalendarAppointment appointment = new(AppointmentAction.AddItem, item);
                 AddAppointmentToQueue(appointment);
+            }
+            else if (Item is MeetingItem meeting)
+            {
+                var appointment = meeting.GetAssociatedAppointment(true);
+                Calendar.AddItem(appointment);
+                CalendarAppointment calAppointment = new(AppointmentAction.AddItem, appointment);
+                AddAppointmentToQueue(calAppointment);
             }
         }
     }

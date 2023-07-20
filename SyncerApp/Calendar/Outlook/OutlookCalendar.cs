@@ -59,8 +59,9 @@ namespace SyncerApp.Calendar.Outlook
 
         public List<AppointmentItem> GetAllAppointments()
         {
-            List<AppointmentItem> appointments = new List<AppointmentItem>();
+            List<AppointmentItem> appointments = new();
             Items outlookCalendarItems = calendarFolder.Items;
+            outlookCalendarItems.IncludeRecurrences = true;
             foreach (AppointmentItem item in outlookCalendarItems)
             {
                 appointments.Add(item);
@@ -70,8 +71,9 @@ namespace SyncerApp.Calendar.Outlook
 
         public List<AppointmentItem> GetCalendarAppointmentsModifiedAfter(DateTime time)
         {
-            string timeFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-            string sfilter = string.Format("[ModifiedTime]>={0}", time.ToString(timeFormat));
+            string timeFormat = $"{CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern} " +
+                $"{CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern}";
+            string sfilter = string.Format("[LastModificationTime] >= '{0}'", time.ToString(timeFormat));
             return GetAppointmentsFiltered(sfilter);
         }
 
@@ -82,7 +84,7 @@ namespace SyncerApp.Calendar.Outlook
         /// <returns>A list of appointments that match the filter</returns>
         List<AppointmentItem> GetAppointmentsFiltered(string filter)
         {
-            List<AppointmentItem> appointments = new List<AppointmentItem>();
+            List<AppointmentItem> appointments = new();
             Items outlookCalendarItems = calendarFolder.Items.Restrict(filter);
             outlookCalendarItems.IncludeRecurrences = true;
             foreach (AppointmentItem item in outlookCalendarItems)

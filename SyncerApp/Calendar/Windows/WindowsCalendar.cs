@@ -6,71 +6,89 @@ namespace SyncerApp.Calendar.Windows
 {
     internal class WindowsCalendar
     {
-        AppointmentStore appointmentStore;
-        AppointmentCalendar appCalendar;
-
-        CalendarStorageSettings calendarStorageSettings;
+        AppointmentStore? appointmentStore;
+        AppointmentCalendar? appCalendar;
         const string OUTLOOK_CALENDAR = "OutlookCalendar";
+        const string LAST_SYNC_TIME = "lastSyncTime";
 
 
-        public WindowsCalendar(CalendarStorageSettings storageSettings)
+        public WindowsCalendar()
         {
-            calendarStorageSettings = storageSettings;
             InitCalendar();
         }
 
-        async Task InitCalendar()
+        async void InitCalendar()
         {
+            bool firstTime = !ApplicationData.Current.LocalSettings.Values.ContainsKey(LAST_SYNC_TIME);
             appointmentStore = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AllCalendarsReadWrite);
-            bool calendar_exists = ApplicationData.Current.LocalSettings.Values.ContainsKey(OUTLOOK_CALENDAR);
-            if (calendar_exists)
+            
+            string calendarId = (string)ApplicationData.Current.LocalSettings.Values[OUTLOOK_CALENDAR];
+            appCalendar = await appointmentStore?.GetAppointmentCalendarAsync(calendarId);
+            if (firstTime)
             {
-                string calendarId = (string)ApplicationData.Current.LocalSettings.Values[OUTLOOK_CALENDAR];
-                appCalendar = await appointmentStore.GetAppointmentCalendarAsync(calendarId);
-            }
-            else
-            {
+                appCalendar?.DeleteAsync();
                 CreateCalendar();
             }
         }
 
         async void CreateCalendar()
         {
-            appCalendar = await appointmentStore.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
+            appCalendar = await appointmentStore?.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
             ApplicationData.Current.LocalSettings.Values[OUTLOOK_CALENDAR] = appCalendar.LocalId;
         }
 
         public async Task AddAppointment(Appointment appointment)
         {
-            if (!calendarStorageSettings.RoamingIdExists(appointment.RoamingId))
+            try
             {
-                await appCalendar.SaveAppointmentAsync(appointment);
-                calendarStorageSettings.AddLocalIdMapping(appointment.RoamingId, appointment.LocalId);
+                string? localId = await GetLocalIdFromRoamingId(appointment.RoamingId);
+                await appCalendar?.SaveAppointmentAsync(appointment);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+
+            }
+            catch (ArgumentNullException)
+            {
+
             }
         }
 
         public async Task RemoveAppointment(Appointment appointment)
         {
-            await appCalendar.DeleteAppointmentAsync(appointment.LocalId);
-            calendarStorageSettings.RemoveLocalIdMapping(appointment.RoamingId);
+            string? localId = await GetLocalIdFromRoamingId(appointment.RoamingId);
+            await appCalendar?.DeleteAppointmentAsync(localId);
         }
 
         public async Task ModifyAppointment(Appointment appointment)
         {
-            string localId = calendarStorageSettings.GetLocalIdFromRoamingId(appointment.RoamingId);
-            Appointment original = await appointmentStore.GetAppointmentAsync(localId);
-            foreach (PropertyInfo property in typeof(Appointment).GetProperties().Where(p => p.CanWrite))
+            string? localId = await GetLocalIdFromRoamingId(appointment.RoamingId);
+            if (!string.IsNullOrEmpty(localId))
             {
-                property.SetValue(original, property.GetValue(appointment, null), null);
+                Appointment original = await appointmentStore?.GetAppointmentAsync(localId);
+                foreach (PropertyInfo property in typeof(Appointment).GetProperties().Where(p => p.CanWrite))
+                {
+                    property.SetValue(original, property.GetValue(appointment, null), null);
+                }
+                await appCalendar?.SaveAppointmentAsync(original);
             }
-            await appCalendar.SaveAppointmentAsync(original);
+            else
+            {
+                await AddAppointment(appointment);
+            }
+        }
+
+        async Task<string?> GetLocalIdFromRoamingId(string roamingId)
+        {
+            IReadOnlyList<string> localIds = await appointmentStore?.FindLocalIdsFromRoamingIdAsync(roamingId);
+            return localIds?.FirstOrDefault();
         }
 
         public async Task<List<Appointment>> GetEventsOnDate(DateTime date)
         {
             appointmentStore = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AllCalendarsReadWrite);
-            appCalendar = await appointmentStore.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
-            IReadOnlyList<Appointment> appointments = await appointmentStore.FindAppointmentsAsync(new DateTimeOffset(date.Date), TimeSpan.FromHours(24));
+            appCalendar = await appointmentStore?.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
+            IReadOnlyList<Appointment> appointments = await appointmentStore?.FindAppointmentsAsync(new DateTimeOffset(date.Date), TimeSpan.FromHours(24));
             return new List<Appointment>(appointments);
         }
     }

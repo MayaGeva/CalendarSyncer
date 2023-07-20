@@ -48,7 +48,7 @@ namespace SyncerApp.Calendar.Windows
                 }
             }
         }
-        async Task<CalendarAppointment> GetAppointment()
+        Task<CalendarAppointment> GetAppointment()
         {
             CalendarAppointment calendarAppointment;
             Mutex mutex = new(true, "AppointmentsQueue", out bool createdNew);
@@ -62,7 +62,7 @@ namespace SyncerApp.Calendar.Windows
                 calendarAppointment = appointmentCollection.Take();
             }
             mutex.ReleaseMutex();
-            return calendarAppointment;
+            return Task.FromResult(calendarAppointment);
         }
     }
 }
