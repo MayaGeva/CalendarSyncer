@@ -32,8 +32,11 @@ namespace SyncerApp.Calendar.Windows
                     keep_running = false;
                 }
                 CalendarAppointment calendarAppointment = await GetAppointment();
-                
-                Appointment appointment = appointmentConverter.ToAppointment(calendarAppointment.Appointment);
+                Appointment appointment = new();
+                if (calendarAppointment.Appointment != null)
+                {
+                    appointment = appointmentConverter.ToAppointment(calendarAppointment.Appointment);
+                }
                 switch (calendarAppointment.Action)
                 {
                     case AppointmentAction.AddItem:

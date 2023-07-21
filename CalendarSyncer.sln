@@ -7,6 +7,8 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "CalendarSyncer", "CalendarS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncerApp", "SyncerApp\SyncerApp.csproj", "{058F8D4D-984C-4D71-B1BE-2B145BA91C10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlookLauncher", "OutlookLauncher\OutlookLauncher.csproj", "{831CDBA2-927C-481B-BFD0-4068A70CC758}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,26 @@ Global
 		{058F8D4D-984C-4D71-B1BE-2B145BA91C10}.Release|x64.Build.0 = Release|Any CPU
 		{058F8D4D-984C-4D71-B1BE-2B145BA91C10}.Release|x86.ActiveCfg = Release|Any CPU
 		{058F8D4D-984C-4D71-B1BE-2B145BA91C10}.Release|x86.Build.0 = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|ARM.Build.0 = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|x64.Build.0 = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Debug|x86.Build.0 = Debug|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|ARM.ActiveCfg = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|ARM.Build.0 = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|ARM64.Build.0 = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|x64.ActiveCfg = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|x64.Build.0 = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|x86.ActiveCfg = Release|Any CPU
+		{831CDBA2-927C-481B-BFD0-4068A70CC758}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
