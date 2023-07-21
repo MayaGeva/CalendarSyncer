@@ -18,11 +18,10 @@ namespace SyncerApp.Calendar.Outlook
         public void FirstTimeRun()
         {
             bool firstTime = !ApplicationData.Current.LocalSettings.Values.ContainsKey(LAST_SYNC_TIME);
-            List<AppointmentItem> appointments;
+            List<AppointmentItem> appointments = new();
             if (firstTime)
             {
                 appointments = Calendar.GetAllAppointments();
-                ApplicationData.Current.LocalSettings.Values[LAST_SYNC_TIME] = DateTime.Now.ToString();
             }
             else
             {
@@ -31,26 +30,16 @@ namespace SyncerApp.Calendar.Outlook
             }
             foreach (AppointmentItem appointment in appointments)
             {
-                CalendarAppointment calendarAppointment = new(AppointmentAction.AddItem, appointment);
-                AddAppointmentToQueue(calendarAppointment);
+                calendarAppointments.Add(new(AppointmentAction.AddItem, appointment));
             }
+            calendarAppointments.Add(new(AppointmentAction.NoAction, new AppointmentItem()));
         }
 
-        void AddAppointmentToQueue(CalendarAppointment appointment)
-        {
-            Mutex mutex = new(true, "AppointmentsQueue", out bool createdNew);
-            if (createdNew)
-            {
-                calendarAppointments.Add(appointment);
-            }
-            else
-            {
-                mutex.WaitOne();
-                calendarAppointments.Add(appointment);
-            }
-            mutex.ReleaseMutex();
-        }
-
+        /// <summary>
+        /// This is called before an item is deleted from the outlook calendar folder
+        /// </summary>
+        /// <param name="Item">The item that is being deleted</param>
+        /// <param name="Cancel">Whether or not the user pressed cancel</param>
         private void ItemBeforeDelete(object Item, ref bool Cancel)
         {
             Console.WriteLine("An Item is being deleted!");
@@ -58,34 +47,42 @@ namespace SyncerApp.Calendar.Outlook
             {
                 Calendar.RemoveItem(item);
                 CalendarAppointment appointment = new(AppointmentAction.RemoveItem, item);
-                AddAppointmentToQueue(appointment);
+                calendarAppointments.Add(appointment);
             }
             else if (!Cancel && Item is MeetingItem meeting)
             {
                 var appointment = meeting.GetAssociatedAppointment(true);
                 Calendar.AddItem(appointment);
                 CalendarAppointment calAppointment = new(AppointmentAction.ChangeItem, appointment);
-                AddAppointmentToQueue(calAppointment);
+                calendarAppointments.Add(calAppointment);
             }
         }
 
+        /// <summary>
+        /// This is called when an item is changed in the outlook calendar folder
+        /// </summary>
+        /// <param name="Item">The item that was changed</param>
         private void OutlookItemChange(object Item)
         {
             Console.WriteLine("An Item has changed!");
             if (Item is AppointmentItem item)
             {
                 CalendarAppointment appointment = new(AppointmentAction.ChangeItem, item);
-                AddAppointmentToQueue(appointment);
+                calendarAppointments.Add(appointment);
             }
             else if (Item is MeetingItem meeting)
             {
                 var appointment = meeting.GetAssociatedAppointment(true);
                 Calendar.AddItem(appointment);
                 CalendarAppointment calAppointment = new(AppointmentAction.ChangeItem, appointment);
-                AddAppointmentToQueue(calAppointment);
+                calendarAppointments.Add(calAppointment);
             }
         }
 
+        /// <summary>
+        /// This is called when an item is added to the outlook calendar folder
+        /// </summary>
+        /// <param name="Item">The outlook item added to the folder</param>
         private void OutlookItemAdd(object Item)
         {
             Console.WriteLine("An Item has been added!");
@@ -94,14 +91,14 @@ namespace SyncerApp.Calendar.Outlook
             {
                 Calendar.AddItem(item);
                 CalendarAppointment appointment = new(AppointmentAction.AddItem, item);
-                AddAppointmentToQueue(appointment);
+                calendarAppointments.Add(appointment);
             }
             else if (Item is MeetingItem meeting)
             {
                 var appointment = meeting.GetAssociatedAppointment(true);
                 Calendar.AddItem(appointment);
                 CalendarAppointment calAppointment = new(AppointmentAction.AddItem, appointment);
-                AddAppointmentToQueue(calAppointment);
+                calendarAppointments.Add(calAppointment);
             }
         }
     }
