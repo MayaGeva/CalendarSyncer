@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Windows.ApplicationModel.Appointments;
+using Windows.Storage;
 
 namespace SyncerApp.Calendar.Windows
 {
@@ -8,6 +9,7 @@ namespace SyncerApp.Calendar.Windows
         BlockingCollection<CalendarAppointment> appointmentCollection;
         AppointmentConverter appointmentConverter;
         WindowsCalendar windowsCalendar;
+        const string LAST_SYNC_TIME = "LastSyncTime";
 
         public WindowsCalendarSyncer(
             BlockingCollection<CalendarAppointment> calendarAppointments, 
@@ -44,6 +46,7 @@ namespace SyncerApp.Calendar.Windows
                         await windowsCalendar.ModifyAppointment(appointment);
                         break;
                     default:
+                        ApplicationData.Current.LocalSettings.Values[LAST_SYNC_TIME] = DateTime.Now.ToString();
                         break;
                 }
             }

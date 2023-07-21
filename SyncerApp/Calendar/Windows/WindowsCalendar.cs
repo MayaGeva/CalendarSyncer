@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Windows.ApplicationModel.Appointments;
+using Windows.Globalization;
 using Windows.Storage;
 
 namespace SyncerApp.Calendar.Windows
@@ -9,7 +10,6 @@ namespace SyncerApp.Calendar.Windows
         AppointmentStore? appointmentStore;
         AppointmentCalendar? appCalendar;
         const string OUTLOOK_CALENDAR = "OutlookCalendar";
-        const string LAST_SYNC_TIME = "lastSyncTime";
 
 
         public WindowsCalendar()
@@ -19,15 +19,15 @@ namespace SyncerApp.Calendar.Windows
 
         async void InitCalendar()
         {
-            bool firstTime = !ApplicationData.Current.LocalSettings.Values.ContainsKey(LAST_SYNC_TIME);
             appointmentStore = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AllCalendarsReadWrite);
-            
-            string calendarId = (string)ApplicationData.Current.LocalSettings.Values[OUTLOOK_CALENDAR];
-            appCalendar = await appointmentStore?.GetAppointmentCalendarAsync(calendarId);
-            if (firstTime)
+            string calendarId = await CalendarExists(OUTLOOK_CALENDAR);
+            if (calendarId == string.Empty) 
             {
-                appCalendar?.DeleteAsync();
                 CreateCalendar();
+            }
+            else
+            {
+                appCalendar = await appointmentStore.GetAppointmentCalendarAsync(calendarId);
             }
         }
 
@@ -46,11 +46,8 @@ namespace SyncerApp.Calendar.Windows
             }
             catch (ArgumentOutOfRangeException)
             {
-
-            }
-            catch (ArgumentNullException)
-            {
-
+                // Appointment with this roaming id exists in calendar
+                await ModifyAppointment(appointment);
             }
         }
 
@@ -90,6 +87,17 @@ namespace SyncerApp.Calendar.Windows
             appCalendar = await appointmentStore?.CreateAppointmentCalendarAsync(OUTLOOK_CALENDAR);
             IReadOnlyList<Appointment> appointments = await appointmentStore?.FindAppointmentsAsync(new DateTimeOffset(date.Date), TimeSpan.FromHours(24));
             return new List<Appointment>(appointments);
+        }
+
+        async Task<string> CalendarExists(string calendarName)
+        {
+            var calendars = await appointmentStore?.FindAppointmentCalendarsAsync();
+            List<string> calendarNames = calendars.Select(o => o.DisplayName).ToList();
+            if (calendarNames.Contains(calendarName))
+            {
+                return calendars[calendarNames.IndexOf(calendarName)].LocalId;
+            }
+            return string.Empty;
         }
     }
 }
